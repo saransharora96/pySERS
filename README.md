@@ -1,8 +1,8 @@
-# Low-Cost Surface-Enhanced Raman Spectroscopy (SERS) Project
+# pySERS: A Surface-Enhanced Raman Spectroscopy (SERS) Analysis toolkit 
 Author: Saransh Arora
 
 ## Overview
-The Low-Cost SERS project focuses on democratizing Surface-Enhanced Raman Spectroscopy (SERS) for widespread use by developing affordable and scalable biosensing solutions. The project encompasses diverse functionalities, including sensitivity analysis, reproducibility assessment, and specific use cases like pesticide and bacteria detection. This repository combines computational tools, experimental data, and analysis pipelines to streamline SERS-based research and applications.
+The library has been developed so far in service of a Low-Cost SERS project focuses on democratizing Surface-Enhanced Raman Spectroscopy (SERS) for widespread use by developing affordable and scalable biosensing solutions. The project encompasses diverse functionalities, including sensitivity analysis, reproducibility assessment, and specific use cases like pesticide and bacteria detection. This repository combines computational tools, experimental data, and analysis pipelines to streamline SERS-based research and applications.
 
 ---
 
