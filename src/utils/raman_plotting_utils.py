@@ -3,7 +3,7 @@
 
 import matplotlib.pyplot as plt
 import numpy as np
-from src.utils import raman_data_processing_utils as raman_data
+from utils import raman_data_processing_utils as raman_data
 from matplotlib.colors import LinearSegmentedColormap
 import random
 import inspect
@@ -48,15 +48,16 @@ def plot_random_spectra(spectra, raman_shift, ax=None, num_spectra_to_plot=25, e
     plot_raw_spectra(random_spectra, raman_shift, edge_alpha=edge_alpha, ax=ax)
 
 
-def plot_mean_spectra(spectra, raman_shift, ax=None, title='Mean Spectrum with Standard Deviation', y_lim=None):
+def plot_mean_spectra(spectra, raman_shift, ax=None, title='Mean Spectrum with Standard Deviation', y_lim=None, label=None):
     """
-    Plots the given spectra against the Raman shift values. This code doesn't make the figure or show the plot,
-    that must be done handled in the main (outer code) that calls this function.
-
+    Plots the mean spectrum with standard deviation shading.
     Parameters:
     spectra (numpy array): The dataset containing spectra to be plotted.
     raman_shift (numpy array): The Raman shift values corresponding to the spectra.
-    edge_alpha (float): The alpha blending value for the plot edges. Default is 1.
+    ax (matplotlib.axes._subplots.AxesSubplot): Matplotlib axis object.
+    title (str): Title of the plot.
+    y_lim (tuple): Limits for the y-axis.
+    label (str): Label for the mean spectrum.
     """
     if ax is None:
         ax = plt.gca()
@@ -65,9 +66,12 @@ def plot_mean_spectra(spectra, raman_shift, ax=None, title='Mean Spectrum with S
     mean_spectrum = np.mean(spectra_array, axis=0)
     std_spectrum = np.std(spectra_array, axis=0)
 
-    ax.plot(raman_shift, mean_spectrum, label='Mean Spectrum')
-    ax.fill_between(raman_shift, mean_spectrum - std_spectrum, mean_spectrum + std_spectrum, alpha=0.5,
-                    label='Standard Deviation')
+    # Plot the mean spectrum with the provided label
+    ax.plot(raman_shift, mean_spectrum, label=label)
+
+    # Plot the standard deviation shading without a label
+    ax.fill_between(raman_shift, mean_spectrum - std_spectrum, mean_spectrum + std_spectrum, alpha=0.3, label=None)
+
     ax.set_title(title)
     ax.set_xlabel('Raman Shift (cm^-1)')
     ax.set_ylabel('Intensity')
@@ -239,3 +243,91 @@ def plot_heatmap(matrix, color_map='hot', ax=None, vmin=None, vmax=None, return_
 
 def custom_color_map(colors):
     return LinearSegmentedColormap.from_list('custom_colormap', colors, N=256)
+
+
+import matplotlib.patches as patches
+import matplotlib as mpl
+from sklearn.metrics import confusion_matrix
+import seaborn as sns
+from matplotlib.colors import Normalize
+
+def plot_confusion_matrix(ax, y_test, y_pred, labels, colors=('#F18521', '#1A99D6')):
+    """
+    Plots a binary-styled confusion matrix without a colorbar.
+    
+    Parameters:
+    - y_test: Ground truth labels.
+    - y_pred: Predicted labels.
+    - labels: Unique labels for classes.
+    - colors: Tuple of two hex colors for false and true predictions.
+    
+    Returns:
+    - None: Displays the confusion matrix.
+    """
+    # Compute confusion matrix
+    cm = confusion_matrix(y_test, y_pred)
+    cmap = sns.color_palette([colors[1], colors[0]], as_cmap=False)
+    alpha = 0.7
+
+    # Plot the confusion matrix using Seaborn heatmap
+    sns.heatmap(cm, annot=True, fmt='d', cmap=cmap, linewidths=2, linecolor='white', square=True, cbar=False,
+                xticklabels=labels, yticklabels=labels, annot_kws={"size": 16}, alpha=alpha)
+    
+     # Add a solid split bar on the right
+    bar_height = len(cm)  # Relative height of the bar
+    bar_width = 0.1  # Relative width of the bar
+    left = len(cm) + bar_width  # Position on the right side of the heatmap
+    for i, color in enumerate(colors):
+        rect = patches.Rectangle(
+            (left, i),  # Bottom-left corner
+            bar_width,  # Width
+            bar_height/2,  # Height
+            linewidth=1,
+            edgecolor='k',
+            facecolor=color,
+            alpha=alpha
+        )
+        ax.add_patch(rect)
+    
+    # Adjust axis limits to include the bar
+    ax.set_xlim(0, len(cm)+bar_width+0.15)
+    ax.set_ylim(len(cm)+0.1, -0.1)
+
+    # Remove ticks and title but keep axis labels
+    ax.tick_params(left=False, bottom=False, labelsize=12)
+    for spine in ax.spines.values():
+        spine.set_visible(False)
+
+    plt.tight_layout()
+
+
+def add_feature_importance_shading(ax, raman_shift, feature_importances, color_hex="#FF0000", max_alpha=0.5):
+    """
+    Shade the background of the plot based on feature importance with a colorbar.
+
+    Args:
+        ax: The axis to apply shading.
+        raman_shift: Array of Raman shift values.
+        feature_importances: Array of feature importances corresponding to Raman shifts.
+        color_hex: Hexadecimal color for the shading.
+        max_alpha: Maximum transparency level for the highest importance. Default is 0.5.
+    Returns:
+        norm: Normalized feature importance used for the colorbar.
+        cmap: Colormap instance used for shading.
+    """
+    # Normalize feature importances to [0, max_alpha]
+    scaled_importances = feature_importances / np.max(feature_importances) * max_alpha
+    
+    # Create a custom colormap using the hex color
+    cmap = mpl.colors.LinearSegmentedColormap.from_list(
+        "custom_cmap",
+        [(1, 1, 1, 0), mpl.colors.to_rgba(color_hex, 1)],  # Transparent to opaque gradient
+    )
+    
+    norm = Normalize(vmin=0, vmax=max_alpha)  # Scale to [0, max_alpha]
+    
+    # Add vertical shading for each feature
+    for i in range(len(raman_shift) - 2):
+        ax.axvspan(raman_shift[i-1], raman_shift[i + 2], color=cmap(norm(scaled_importances[i])))
+    
+    return norm, cmap

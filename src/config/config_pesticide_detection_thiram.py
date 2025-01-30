@@ -1,5 +1,3 @@
-import numpy as np
-
 INSTALLATION_NEEDED = False
 
 # Data processing parameters

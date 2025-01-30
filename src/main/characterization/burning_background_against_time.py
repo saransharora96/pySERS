@@ -1,7 +1,7 @@
 import numpy as np
 import os
-from src.utils import raman_data_processing_utils as rd
-from src.utils import raman_plotting_utils as rp
+from utils import raman_data_processing_utils as rd
+from utils import raman_plotting_utils as rp
 import matplotlib.pyplot as plt
 
 """ 

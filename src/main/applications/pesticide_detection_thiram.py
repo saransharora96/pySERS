@@ -1,7 +1,7 @@
-from src.utils import raman_plotting_utils as rp, raman_data_processing_utils as rd
+from utils import raman_plotting_utils as rp, raman_data_processing_utils as rd
 import time
-from src.install_modules import upgrade_pip, install_packages
-from src.utils.data_classes import SensitivityAnalysis, read_dataset
+from install_modules import upgrade_pip, install_packages
+from utils.data_classes import SensitivityAnalysis, read_dataset
 from matplotlib.colors import ListedColormap
 import matplotlib.pyplot as plt
 import math
@@ -10,7 +10,7 @@ from matplotlib.colors import Normalize
 import numpy as np
 from scipy.optimize import curve_fit
 from scipy.interpolate import PchipInterpolator  # Monotonic Spline Interpolation
-from src.config.config_pesticide_detection_thiram import (INSTALLATION_NEEDED, INTENSITY_MAP_COLORS, DIGITAL_MAP_COLORS,
+from config.config_pesticide_detection_thiram import (INSTALLATION_NEEDED, INTENSITY_MAP_COLORS, DIGITAL_MAP_COLORS,
                                                           SHOW_DATASET_HEATMAPS, SAVE_DATASET_FIGURES,
                                                           SHOW_DATASET_REGRESSION_PLOTS, SHOW_DATASET_SPECTRA_PLOTS,
                                                           STD_MULTIPLE, SHOW_MAP_HEATMAP,

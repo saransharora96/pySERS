@@ -1,4 +1,4 @@
-from src.utils import raman_data_processing_utils as rd, raman_plotting_utils as rp
+from utils import raman_data_processing_utils as rd, raman_plotting_utils as rp
 import os
 import numpy as np
 import matplotlib.pyplot as plt

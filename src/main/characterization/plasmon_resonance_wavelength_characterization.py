@@ -1,7 +1,7 @@
 import matplotlib.pyplot as plt
 import os
 import numpy as np
-from src.utils import raman_plotting_utils as rp
+from utils import raman_plotting_utils as rp
 
 dataset_location = (
     r"D:\OneDrive_JohnsHopkins\Desktop\JohnsHopkins\Projects\PathogenSERS\journal_low_cost_virus\code\data"

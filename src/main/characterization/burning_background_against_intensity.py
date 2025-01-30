@@ -2,7 +2,7 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 from scipy import signal
-from src.utils import raman_data_processing_utils as rd
+from utils import raman_data_processing_utils as rd
 
 dataset_location = (
     r"D:\OneDrive_JohnsHopkins\Desktop\JohnsHopkins\Projects\PathogenSERS\journal_low_cost_virus\code\data"

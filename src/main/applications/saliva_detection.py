@@ -1,6 +1,6 @@
 import os
-import src.utils.raman_data_processing_utils as rd
-import src.utils.raman_plotting_utils as rp
+import utils.raman_data_processing_utils as rd
+import utils.raman_plotting_utils as rp
 import matplotlib.pyplot as plt
 import numpy as np
 from collections import defaultdict

@@ -1,12 +1,11 @@
-from src.utils import raman_data_processing_utils as rd, raman_plotting_utils as rp, \
-    raman_statistical_utils as rs
+from utils import raman_data_processing_utils as rd, raman_plotting_utils as rp
 import matplotlib.pyplot as plt
 import time
 import os
 import numpy as np
 from mpl_toolkits.axes_grid1.anchored_artists import AnchoredSizeBar
 
-from src.config.config_reproducibility import INSTALLATION_NEEDED, SHOW_MAP_SPECTRA_PLOTS, SHOW_MAP_HEATMAP, SHOW_MAP_PEAK_PLOTS, SHOW_MAP_RSD_PLOTS, \
+from config.config_reproducibility import INSTALLATION_NEEDED, SHOW_MAP_SPECTRA_PLOTS, SHOW_MAP_HEATMAP, SHOW_MAP_PEAK_PLOTS, SHOW_MAP_RSD_PLOTS, \
     REPORT_MAP_PERCENTAGE_RSD, SAVE_MAP_FIGURES, PROMINENCE_THRESHOLD, Z_THRESHOLD, BLOB_SIZE_THRESHOLD, PEAK_SHIFT_TOLERANCE, TARGET_RAMAN_SHIFTS,  \
     COLOR_BAR_RANGE, MAP_COLORS
 
@@ -94,7 +93,7 @@ def report_stepwise_percentage_rsd(intensity, title):
     if REPORT_MAP_PERCENTAGE_RSD is True:
         print(f"\033[94m\nResults after {title}\033[0m")
         for target_shift in TARGET_RAMAN_SHIFTS:
-            rs.percentage_rsd(intensity[target_shift], target_shift)
+            rd.percentage_rsd(intensity[target_shift], target_shift)
 
 
 def reproducibility_analysis_for_each_map(spectra, raman_shift, subdir_path, color_map='viridis'):
@@ -166,7 +165,7 @@ def reproducibility_analysis_for_each_map(spectra, raman_shift, subdir_path, col
     plot_spectra_results(filtered_spectra, raman_shift, subdir_path, num_spectra=100, edge_alpha=0.25, title=title)
     plot_heatmap_results(intensities_square_dict, subdir_path, color_map=color_map, title=title)
     if SHOW_MAP_RSD_PLOTS is True:
-        rs.percentage_rsd_versus_raman_shift(filtered_spectra, raman_shift, title)
+        rd.percentage_rsd_versus_raman_shift(filtered_spectra, raman_shift, title)
         plt.show()
         plt.close()  # Explicitly close the figure to avoid memory leaks
 
@@ -182,14 +181,14 @@ def reproducibility_analysis_for_each_map(spectra, raman_shift, subdir_path, col
     plot_spectra_results(standardized_spectra, raman_shift, subdir_path, num_spectra=100, edge_alpha=0.25, title=title)
     plot_heatmap_results(intensities_square_dict, subdir_path, color_map=color_map, title=title)
     if SHOW_MAP_RSD_PLOTS is True:
-        rs.percentage_rsd_versus_raman_shift(standardized_spectra, raman_shift, title)
+        rd.percentage_rsd_versus_raman_shift(standardized_spectra, raman_shift, title)
         plt.show()
         plt.close()
     """
     Filter the spectra based on outliers (z score)
     """
-    filtered_spectra, filtered_indices = rd.remove_outliers_from_spectra(standardized_spectra, spectra_indices,
-                                                                         square_size, threshold=Z_THRESHOLD)
+    filtered_spectra, filtered_indices = rd.remove_outliers_from_square_spectra_maps_with_indices(standardized_spectra, spectra_indices,
+                                                                                                  square_size, threshold=Z_THRESHOLD)
 
     index_mapping, index_mapping_binary = rd.index_mapping_update(index_mapping, filtered_indices)
     filtered_spectra = rd.min_max_normalize_entire_dataset(filtered_spectra)
@@ -200,7 +199,7 @@ def reproducibility_analysis_for_each_map(spectra, raman_shift, subdir_path, col
     plot_spectra_results(filtered_spectra, raman_shift, subdir_path, num_spectra=100, edge_alpha=0.25, title=title)
     plot_heatmap_results(intensities_square_dict, subdir_path, color_map=color_map, title=title)
     if SHOW_MAP_RSD_PLOTS is True:
-        rs.percentage_rsd_versus_raman_shift(filtered_spectra, raman_shift, title)
+        rd.percentage_rsd_versus_raman_shift(filtered_spectra, raman_shift, title)
         plt.show()
         plt.close()
 
@@ -219,7 +218,7 @@ def reproducibility_analysis_for_each_map(spectra, raman_shift, subdir_path, col
     plot_spectra_results(filtered_spectra, raman_shift, subdir_path, num_spectra=100, edge_alpha=0.25, title=title)
     plot_heatmap_results(intensities_square_dict, subdir_path, color_map=color_map, title=title)
     if SHOW_MAP_RSD_PLOTS is True:
-        rs.percentage_rsd_versus_raman_shift(filtered_spectra, raman_shift, title)
+        rd.percentage_rsd_versus_raman_shift(filtered_spectra, raman_shift, title)
         plt.show()
         plt.close()
 

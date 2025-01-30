@@ -2,7 +2,7 @@ import os
 import numpy as np
 import matplotlib.pyplot as plt
 import math
-from src.utils import raman_data_processing_utils as raman_data, raman_plotting_utils as raman_plots
+from utils import raman_data_processing_utils as raman_data, raman_plotting_utils as raman_plots
 
 
 """

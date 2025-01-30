@@ -5,7 +5,7 @@ from scipy import stats
 from scipy.stats import kruskal, spearmanr, pearsonr
 import csv
 import math
-from src.utils import raman_data_processing_utils as raman_data, raman_plotting_utils as raman_plots
+from utils import raman_data_processing_utils as raman_data, raman_plotting_utils as raman_plots
 
 
 def read_voltage_against_raman_data(folder_path):
@@ -74,7 +74,7 @@ for voltage, data in sorted(all_spectra.items()):
 for voltage in all_spectra.keys():
     spectra = all_spectra[voltage]
     index_mapping = list(range(len(spectra)))
-    all_spectra[voltage], _ = raman_data.remove_outliers_from_spectra(spectra, index_mapping, threshold=2)
+    all_spectra[voltage], _ = raman_data.remove_outliers_from_square_spectra_maps_with_indices(spectra, index_mapping, threshold=2)
 
 n_cols = 2  # Number of columns you want
 n_rows = math.ceil(len(all_spectra) / n_cols)  # Calculate rows needed

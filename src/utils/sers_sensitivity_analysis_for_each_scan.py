@@ -1,6 +1,6 @@
 import numpy as np
 import matplotlib.pyplot as plt
-from src.utils import raman_data_processing_utils as rd, raman_plotting_utils as rp
+from utils import raman_data_processing_utils as rd, raman_plotting_utils as rp
 
 
 def digital_sers_analysis(spectra, raman_shift, characteristic_intensity_range, background_intensity_range,

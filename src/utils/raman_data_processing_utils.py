@@ -336,6 +336,27 @@ def trim_spectra_by_raman_shift_range(spectra, raman_shift, lower_limit=None, up
     return trimmed_spectra, trimmed_raman_shift
 
 
+def remove_outliers_from_spectra(spectra, threshold=2):
+    # Convert list of spectra to a 2D numpy array for easier manipulation
+    spectra_array = np.array(spectra)
+
+    # Calculate the mean and standard deviation along each feature (column-wise)
+    means = np.mean(spectra_array, axis=0)
+    std_devs = np.std(spectra_array, axis=0)
+
+    # Calculate Z-scores for each spectrum
+    z_scores = np.abs((spectra_array - means) / std_devs)
+
+    # Determine outliers: any spectrum with any feature Z-score above the threshold is an outlier
+    outlier_flags = np.any(z_scores > threshold, axis=1)
+
+    # Filter spectra based on outlier flags
+    filtered_spectra = [spectrum for spectrum, is_outlier in zip(spectra, outlier_flags) if not is_outlier]
+
+    return filtered_spectra
+
+
+
 def lieberfit(spectra, total_iterations=100, order_polyfit=10):
     # Convert spectra to a numpy array
     spectra = np.array(spectra)
@@ -532,7 +553,8 @@ def filter_spectra_from_binary_mapping(input_variable, binary_matrix):
 
     return filtered_spectra
 
-def remove_outliers_from_spectra(spectra, spectra_indices, square_size, threshold=2):
+
+def remove_outliers_from_square_spectra_maps_with_indices(spectra, spectra_indices, square_size, threshold=2):
     # Convert list of spectra to a 2D numpy array for easier manipulation
     spectra_array = np.array(spectra)
 
@@ -752,3 +774,95 @@ def calculate_enhancement_factor(sers_intensity, raman_intensity, concentration_
         print("The maximum enhancement factor is: {:.2e}".format(max_enhancement_factor))
 
         return mean_enhancement_factor, max_enhancement_factor
+
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+
+# Train and evaluate a classifier on Raman spectra
+def random_forest_classifier_for_raman_spectra(spectra, labels, raman_shifts, test_size=0.2, random_state=42):
+    X_train, X_test, y_train, y_test = train_test_split(spectra, labels, test_size=test_size, random_state=random_state)
+    clf = RandomForestClassifier(random_state=random_state, n_estimators=50)
+    clf.fit(X_train, y_train)
+    y_pred = clf.predict(X_test)
+
+    return clf, y_test, y_pred
+
+def percentage_rsd(scalar_matrix, name='the sample', count_zeros=False):
+    """
+    Calculates the coefficient of variation for the non-zero values in a given matrix, presented as a percentage.
+
+    Parameters:
+    matrix (numpy.ndarray): Input matrix with potential zero values.
+    name (str): Name of the matrix for display purposes.
+
+    Returns:
+    float: Coefficient of variation for the non-zero values, as a percentage.
+    """
+    if count_zeros is False:
+        non_zero_values = scalar_matrix[np.nonzero(scalar_matrix)]  # Extract non-zero values
+        scalar_matrix = non_zero_values
+    percentage_rsd = round(np.std(scalar_matrix) / np.mean(scalar_matrix) * 100,2)  # # Calculate the coefficient of variation
+    print(f"The coefficient of variation for Raman shift = {name} is {percentage_rsd}%.")
+
+    return percentage_rsd
+
+import matplotlib.pyplot as plt
+
+def percentage_rsd_versus_raman_shift(spectra_map, raman_shift, title='Coefficient of Variation vs. Raman Shift'):
+    """
+    Plots the coefficient of variation (CV) against raman_shift for a given dataset.
+
+    Parameters:
+    data (numpy.ndarray): A 2D array where each row is a spectrum and each column is a raman shift
+    """
+    # Calculate mean and standard deviation along the columns (for each raman_shift)
+    mean = np.mean(spectra_map, axis=0)
+    std = np.std(spectra_map, axis=0)
+
+    # Calculate the coefficient of variation (CV)
+    rsd_spectra = std / mean
+
+    # Plot CV against raman_shift
+    plt.figure(figsize=(10, 6))
+    plt.plot(raman_shift, rsd_spectra*100, marker='o')
+    plt.xlabel('Raman Shift (cm$^{-1}$)')
+    plt.ylabel('Coefficient of Variation (%)')
+    plt.title(title)
+
+from sklearn.cluster import KMeans
+
+def compute_kmeans(embedding, n_clusters=2, random_state=42):
+    """
+    Perform k-Means clustering on the given embedding.
+
+    Parameters:
+    - embedding (numpy.ndarray): 2D array (n_samples x 2) representing reduced data.
+    - n_clusters (int): Number of clusters for k-Means (default is 2).
+    - random_state (int): Random seed for reproducibility.
+
+    Returns:
+    - cluster_labels (numpy.ndarray): Cluster assignments for each sample.
+    - kmeans_model (KMeans): Trained k-Means model.
+    """
+    kmeans = KMeans(n_clusters=n_clusters, random_state=random_state)
+    kmeans.fit_predict(embedding)
+    return kmeans
+
+import umap.umap_ as umap
+
+def compute_umap(data, n_neighbors=15, min_dist=0.1, random_state=42):
+    """
+    Perform UMAP dimensionality reduction on the data.
+
+    Parameters:
+    - data (numpy.ndarray): High-dimensional input data (n_samples x n_features).
+    - n_neighbors (int): Number of neighbors for UMAP (default is 15).
+    - min_dist (float): Minimum distance between points in the embedding (default is 0.1).
+    - random_state (int): Random seed for reproducibility.
+
+    Returns:
+    - embedding (numpy.ndarray): 2D UMAP embedding of the input data.
+    """
+    reducer = umap.UMAP(n_neighbors=n_neighbors, min_dist=min_dist, random_state=random_state)
+    embedding = reducer.fit_transform(data)
+    return embedding

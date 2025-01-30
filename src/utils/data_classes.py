@@ -1,8 +1,8 @@
 import os
 import numpy as np
-from src.utils import raman_statistical_utils as rs, raman_data_processing_utils as rd
-from src.utils.sers_reproducibility_analysis_each_scan import reproducibility_analysis_for_each_map
-from src.utils.sers_sensitivity_analysis_for_each_scan import sensitivity_analysis_for_each_map
+from utils import raman_data_processing_utils as rd
+from utils.sers_reproducibility_analysis_each_scan import reproducibility_analysis_for_each_map
+from utils.sers_sensitivity_analysis_for_each_scan import sensitivity_analysis_for_each_map
 
 
 def read_dataset(directory, analysis_class):
@@ -64,7 +64,7 @@ class ReproducibilityAnalysis(RamanScan):
                 color_scheme)
             print(f"\033[93m\nResults for {self.subdir_name}\033[0m")
             for key, value in self.intensities_square_dict.items():
-                self.cov_dict[key] = rs.percentage_rsd(value, key)
+                self.cov_dict[key] = rd.percentage_rsd(value, key)
 
 
 class SensitivityAnalysis(RamanScan):

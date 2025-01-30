@@ -5,11 +5,11 @@ Prominence works better in this case. However, absolute value without the use of
 much better as some peaks have higher variability compared to others in the same spectra with the peak prominence.
 """
 import time
-from src.config.config_reproducibility import (INSTALLATION_NEEDED, MAP_COLORS, SAVE_DATASET_CSV, TARGET_RAMAN_SHIFTS,
+from config.config_reproducibility import (INSTALLATION_NEEDED, MAP_COLORS, SAVE_DATASET_CSV, TARGET_RAMAN_SHIFTS,
                                                SAVE_DATASET_FIGURES, SHOW_DATASET_HEATMAPS, SHOW_DATASET_SPECTRA_PLOTS,
                                                SHOW_DATASET_CONTOUR_PLOTS)
-from src.install_modules import upgrade_pip, install_packages
-from src.utils import raman_plotting_utils as rp, raman_statistical_utils as rs
+from install_modules import upgrade_pip, install_packages
+from utils import raman_plotting_utils as rp, raman_statistical_utils as rs
 import os
 import numpy as np
 import csv
